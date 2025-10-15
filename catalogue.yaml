@@ -31,9 +31,38 @@
         url: https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip
         dest: /tmp/catalogue.zip
 
+# this module - unarchive thinks file exits on ansible control server, but needs to extract on remote machine[catalogue server]
+# remote_src: yes , means here file is already exist in catalogue server
     - name: unzipping the catalogue code into /app directory
       ansible.builtin.unarchive:
         src: /tmp/catalogue.zip
         dest: /app
         remote_src: yes
-        
+
+# for npm dependencies, the is no ansibile module, but community module is there
+    - name: Install dependencies for npm 
+      community.general.npm:
+        path: /app
+
+# Creating servive file for catalogue and this an task,
+
+    - name: copy catalogue service to /etc/systemd/system/catalogue.service location
+      ansibile.builtin.copy:
+        src: catalogue.service
+        dest: /etc/systemd/system/catalogue.service location
+
+#deamon reload
+    - name: daemon reload - systemd - systemctl
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+
+# start and enable catalogue service
+    - name: start and enable catalogue service
+      ansibile.builtin.service:
+        name: catalogue
+        state: started
+        enabled: yes
+
+
+
+
