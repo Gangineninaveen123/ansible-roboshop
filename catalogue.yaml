@@ -47,7 +47,7 @@
 # Creating servive file for catalogue and this an task,
 
     - name: copy catalogue service to /etc/systemd/system/catalogue.service location
-      ansibile.builtin.copy:
+      ansible.builtin.copy:
         src: catalogue.service
         dest: /etc/systemd/system/catalogue.service location
 
@@ -58,7 +58,7 @@
 
 # start and enable catalogue service
     - name: start and enable catalogue service
-      ansibile.builtin.service:
+      ansible.builtin.service:
         name: catalogue
         state: started
         enabled: yes
