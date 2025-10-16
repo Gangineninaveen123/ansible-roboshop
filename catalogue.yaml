@@ -63,6 +63,26 @@
         state: started
         enabled: yes
 
+# To have mongo client installed we have to setup MongoDB repo and install mongodb-client.
+    - name: copying mongo.repo file
+      ansible.builtin.copy:
+        src: mongo.repo
+        dest: /etc/yum.repos.d/mongo.repo
+
+# installing mongo db client
+    - name: install mongodb client
+      ansible.builtin.package:
+        name: mongodb-mongosh
+        state: present
+
+# load the products data to mongo db
+
+    - name: load product data
+      community.mongodb.mongodb_shell:
+        file: "/app/db/master-data.js"
+        idempotent: yes
+        login_host: mongodb.muruga.site
+
 
 
 
