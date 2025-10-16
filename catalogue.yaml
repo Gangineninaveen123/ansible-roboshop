@@ -77,11 +77,19 @@
 
 # load the products data to mongo db
 
-    - name: load product data
-      community.mongodb.mongodb_shell:
-        file: "/app/db/master-data.js"
-        idempotent: yes
-        login_host: mongodb.muruga.site
+    - name: Check load products data or not
+      ansible.builtin.command: mongosh --host mongodb.muruga.site --eval 'db.getMongo().getDBNames().indexOf("catalogue")'
+      register: catalogue_output
+
+    # printing above catalogue_output
+
+    - name: print catalogue output
+      ansible.builtin.debug:
+        msg: "{{ catalogue_output }}"
+
+     
+
+
 
 
 
