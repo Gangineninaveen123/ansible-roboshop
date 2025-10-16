@@ -1,0 +1,75 @@
+- name: configure cart component
+  hosts: cart
+  become: yes
+
+  tasks:
+    - name: disable default nodejs
+      ansible.builtin.command: dnf module disable nodejs -y
+
+    - name: enable nodejs:20 version
+      ansible.builtin.command: dnf module enable nodejs:20 -y
+
+    - name: install nodejs:20 vertsion
+      ansible.builtin.package:
+        name: nodejs
+        state: present
+
+    - name: Creating roboshop system user
+      ansible.builtin.user:
+        name: roboshop
+        shell: /sbin/nologin
+        system: true
+        home: /app
+
+    - name: creating app directory
+      ansible.builtin.file:
+        path: /app
+        state: directory
+
+    - name: downloading cart code
+      ansible.builtin.get_url:
+        url: https://roboshop-artifacts.s3.amazonaws.com/cart-v3.zip
+        dest: /tmp/cart.zip
+
+# this module - unarchive thinks file exits on ansible control server, but needs to extract on remote machine[cart server]
+# remote_src: yes , means here file is already exist in cart server
+    - name: unzipping the catalogue code into /app directory
+      ansible.builtin.unarchive:
+        src: /tmp/cart.zip
+        dest: /app
+        remote_src: yes
+
+# for npm dependencies, the is no ansibile module, but community module is there
+    - name: Install dependencies for npm 
+      community.general.npm:
+        path: /app
+
+# Creating servive file for cart and this an task,
+
+    - name: copy user service to /etc/systemd/system/cart.service location
+      ansible.builtin.copy:
+        src: cart.service
+        dest: /etc/systemd/system/cart.service
+
+#deamon reload
+    - name: daemon reload - systemd - systemctl
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+
+# start and enable cart service
+    - name: start and enable catalogue service
+      ansible.builtin.service:
+        name: cart
+        state: started
+        enabled: yes
+
+
+
+     
+
+
+
+
+
+
+
