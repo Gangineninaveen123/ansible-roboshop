@@ -87,6 +87,12 @@
       ansible.builtin.debug:
         msg: "{{ catalogue_output }}"
 
+    # load products in mongodb server if [stdout": "-1"] -> stdout less than 0, if greater than zero means products already loaded
+
+    - name: load products into mongodb server
+      ansible.builtin.command: mongosh --host mongodb.muruga.site </app/db/master-data.js
+      when: catalogue_output.stdout < 0
+
      
 
 
