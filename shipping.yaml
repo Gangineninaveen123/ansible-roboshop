@@ -86,7 +86,10 @@
 
 # Import data into MySQL database through my sql client
     - name: Import data into MySQL database through my sql client
+      tags:  # this tag means , it ll run specically this, because we got error, so making like this, 
+      - import
       community.mysql.mysql_db:
+        name: all # importing all the mentioned in loop
         login_user: root   #my sql client is connecting to mysql server through root access......
         login_password: RoboShop@1
         login_host: mysql.muruga.site
