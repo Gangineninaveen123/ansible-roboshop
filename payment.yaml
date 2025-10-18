@@ -1,0 +1,60 @@
+- name: Configure Payment micro service
+  hosts: payment
+  become: yes
+
+  tasks:
+
+  - name: Install python3 gcc python3-devel
+    ansible.builtin.package:
+      name: python3 gcc python3-devel
+      state: installed
+
+  - name: Creating roboshop system user
+    ansible.builtin.user:
+      name: roboshop
+      shell: /sbin/nologin
+      system: true
+      home: /app
+
+  - name: creating app directory
+    ansible.builtin.file:
+      path: /app
+      state: directory
+
+  - name: downloading catalogue code
+    ansible.builtin.get_url:
+      url: https://roboshop-artifacts.s3.amazonaws.com/payment-v3.zip 
+      dest: /tmp/payment.zip
+
+# this module - unarchive thinks file exits on ansible control server, but needs to extract on remote machine[payment server]
+# remote_src: yes , means here file is already exist in Payment server
+  - name: unzipping the catalogue code into /app directory
+    ansible.builtin.unarchive:
+      src: /tmp/payment.zip
+      dest: /app
+      remote_src: yes  
+
+  - name: install dependencoes
+    ansible.builtin.pip:
+      requirements: requirements.txt
+      executable: pip3.9
+    args:
+      chdir: /app
+
+  - name: Copying the payment service file
+    ansible.builtin.copy:
+      src: payment.service
+      dest: /etc/systemd/system/payment.service
+
+#deamon reload
+  - name: daemon reload - systemd - systemctl
+    ansible.builtin.systemd_service:
+      daemon_reload: true
+
+# start and enable shipping service
+  - name: start and enable catalogue service
+    ansible.builtin.service:
+      name: payment
+      state: started
+      enabled: yes
+   
