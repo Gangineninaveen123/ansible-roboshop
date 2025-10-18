@@ -5,8 +5,12 @@
   tasks:
     - name: Install Maven # which takes care of java installation automatically
       ansible.builtin.package:
-        name: maven
+        name: "{{ item }}"
         state: present
+      loop:
+      - maven
+      - cryptography
+      - mysql
         
 # [PyMySQL] # here, wjile connecting the mysql db by msql client got error in line [69-75], beacause of ansible is developed by python, hence we are downloading it
     - name: install PyMySQL
@@ -63,12 +67,12 @@
         name: shipping
         state: started
         enabled: yes
-
-#To load schema we need to install mysql client.
-    - name: install mysql client to load data or schema to mysql db
-      ansible.builtin.package:
-        name: mysql 
-        state: present
+# this is installing through loops from maven see above 6th line
+# #To load schema we need to install mysql client.
+#     - name: install mysql client to load data or schema to mysql db
+#       ansible.builtin.package:
+#         name: mysql 
+#         state: present
 
 #checking whether the data is already loaded into mysql or not, if app user is bale to connect through mysql means, the data is already loaded......, if not vice versa
     - name: connect to mysql using app user
