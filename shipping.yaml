@@ -9,9 +9,9 @@
         state: present
         
 # [PyMySQL] # here, wjile connecting the mysql db by msql client got error in line [69-75], beacause of ansible is developed by python, hence we are downloading it
-    - name: install PYMSQL
+    - name: install PyMySQL
       ansible.builtin.pip:
-        name: PYMSQL    #here PYMYSQL , its an requriemnt to run the code, from error , we ll get to know, so no issues....
+        name: PyMySQL   #here PyMySQL , its an requriemnt to run the code, from error , we ll get to know, so no issues....
         executable: pip3.9
 
 
