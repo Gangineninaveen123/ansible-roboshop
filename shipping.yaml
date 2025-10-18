@@ -5,7 +5,7 @@
   tasks:
     - name: Install Maven # which takes care of java installation automatically
       ansible.builtin.package:
-        name: "{{ items }}"
+        name: "{{ item }}"
         state: present
         loop:
         - PyMySQL # here, wjile connecting the mysql db by msql client got error in line [69-75], beacause of ansible is developed by python, hence we are downloading it
