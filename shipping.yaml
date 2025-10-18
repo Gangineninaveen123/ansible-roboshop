@@ -36,9 +36,39 @@
       args:
         chdir: /app
 
+    - name: renaming jar file
+      ansible.builtin.command:  mv target/shipping-1.0.jar shipping.jar
+      args:  # used this because , it should run in this location and comes back from /app directory, once the action is completed
+        chdir: /app
 
+    - name: Copying the shipping service file
+      ansible.builtin.copy:
+        src: shipping.service
+        dest: /etc/systemd/system/shipping.service
+#deamon reload
+    - name: daemon reload - systemd - systemctl
+      ansible.builtin.systemd_service:
+        daemon_reload: true
 
+# start and enable shipping service
+    - name: start and enable catalogue service
+      ansible.builtin.service:
+        name: shipping
+        state: started
+        enabled: yes
 
+#To load schema we need to install mysql client.
+    - name: install mysql client to load data or schema to mysql db
+      ansible.builtin.package:
+        name: mysql 
+        state: present
 
+#checking whether the data is already loaded into mysql or not, if app user is bale to connect through mysql means, the data is already loaded......, if not vice versa
+    - name: connect to mysql using app user
+      community.mysql.mysql_info:
+        login_user: shipping
+        login_password: RoboShop@1
+        login_host: mysql.muruga.site
+        login_db: cities
 
 
