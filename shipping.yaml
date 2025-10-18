@@ -75,12 +75,29 @@
 #         name: mysql 
 #         state: present
 
-#checking whether the data is already loaded into mysql or not, if app user is bale to connect through mysql means, the data is already loaded......, if not vice versa
-    - name: connect to mysql using app user
-      community.mysql.mysql_info:
-        login_user: shipping
+# ****** the below code is not giving the return code commented.. *******
+# #checking whether the data is already loaded into mysql or not, if app user is bale to connect through mysql means, the data is already loaded......, if not vice versa
+#     - name: connect to mysql using app user
+#       community.mysql.mysql_info:
+#         login_user: shipping
+#         login_password: RoboShop@1
+#         login_host: mysql.muruga.site
+#         login_db: cities
+
+# Import data into MySQL database through my sql client
+    - name: Import data into MySQL database through my sql client
+      community.mysql.mysql_db:
+        login_user: root   #my sql client is connecting to mysql server through root access......
         login_password: RoboShop@1
         login_host: mysql.muruga.site
-        login_db: cities
+        state: import
+        target: "{{ item }}"
+      loop:
+      - /app/db/schema.sql
+      - /app/db/app-user.sql
+      - /app/db/master-data.sql
 
-
+    - name: Restart shipping
+      ansible.builtin.service:
+        name: shipping
+        state: restarted
